@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CrimeSketch-ID{% endblock %} - AI Facial Similarity Search</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand navbar-brand-custom" href="{% url 'dashboard:index' %}">
+                <i class="bi bi-fingerprint"></i>
+                <span>CrimeSketch-ID</span>
+            </a>
+            <span class="badge bg-primary text-uppercase px-2 py-1 ms-2 font-monospace" style="font-size: 0.65rem;">Academic / Research Demo</span>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="topNavbar">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    {% if is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light py-1 px-2" href="{% url 'sketch_search' %}">
+                                <i class="bi bi-image-fill me-1 text-info"></i> Sketch Search
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light py-1 px-2" href="{% url 'live_camera' %}">
+                                <i class="bi bi-camera-video-fill me-1 text-danger"></i> Live Camera
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                    {{ current_user.username|slice:":1"|upper }}
+                                </div>
+                                <span>{{ current_user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li class="dropdown-header">
+                                    Signed in as <strong>{{ current_user.username }}</strong><br>
+                                    <small class="text-muted text-capitalize">Role: {{ current_user.role|default:"Investigator" }}</small>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><a class="dropdown-item" href="{% url 'help' %}"><i class="bi bi-question-circle me-2"></i>Help</a></li>
+                                <li><a class="dropdown-item" href="{% url 'about' %}"><i class="bi bi-info-circle me-2"></i>About System</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-outline-light" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- App Body Container -->
+    <div class="container-fluid flex-grow-1 p-0">
+        <div class="row g-0 flex-nowrap">
+            {% if is_authenticated %}
+            <!-- Left Sidebar Navigation -->
+            <div class="col-auto col-md-3 col-xl-2 px-0 sidebar d-flex flex-column">
+                <div class="p-3 border-bottom border-secondary text-white-50 small">
+                    <i class="bi bi-shield-shaded text-primary me-1"></i> Forensic AI Suite
+                </div>
+                <ul class="nav nav-pills flex-column mb-auto py-2">
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:index' %}" class="nav-link {% if request.path == '/' or request.path == '/dashboard/' %}active{% endif %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'sketch_search' %}" class="nav-link {% if '/sketch-search' in request.path %}active{% endif %}">
+                            <i class="bi bi-brush"></i> Sketch Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'live_camera' %}" class="nav-link {% if '/live-camera' in request.path %}active{% endif %}">
+                            <i class="bi bi-webcam"></i> Live Camera
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'candidates:list' %}" class="nav-link {% if '/candidates' in request.path %}active{% endif %}">
+                            <i class="bi bi-people"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'searches:history' %}" class="nav-link {% if '/history' in request.path or '/results' in request.path %}active{% endif %}">
+                            <i class="bi bi-clock-history"></i> Search History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'analytics:index' %}" class="nav-link {% if '/analytics' in request.path %}active{% endif %}">
+                            <i class="bi bi-graph-up-arrow"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'evaluation:index' %}" class="nav-link {% if '/evaluation' in request.path %}active{% endif %}">
+                            <i class="bi bi-award"></i> Evaluation
+                        </a>
+                    </li>
+                </ul>
+                <div class="p-3 border-top border-secondary text-secondary small">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span>MongoDB Storage</span>
+                        <span class="badge bg-success" style="font-size: 0.65rem;">Active</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span>OpenCV DNN / SFace</span>
+                        <span class="badge bg-info text-dark" style="font-size: 0.65rem;">128-D</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Main Content Area -->
+            <main class="col ps-md-4 pe-md-4 pt-3 pb-5 flex-grow-1 overflow-auto">
+                <!-- Mandatory Academic Disclaimer Banner -->
+                <div class="academic-disclaimer-banner mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-exclamation fs-5 flex-shrink-0"></i>
+                    <div>
+                        <strong>Academic Disclaimer:</strong> This system is an academic/demo similarity-ranking system. Results are probabilistic and must not be treated as definitive identification or evidence of criminal activity.
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+                            {{ msg }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-3 text-center text-muted small">
+        <div class="container">
+            <p class="mb-1">
+                <strong>CrimeSketch-ID</strong> &bull; AI-Powered Facial Sketch and Image Similarity Search System
+            </p>
+            <p class="mb-0 text-secondary" style="font-size: 0.75rem;">
+                Built for academic research &bull; MongoDB Backend &bull; SFace 128-d Embedding Space &bull; Probabilistic Similarity Matching
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="/static/js/main.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

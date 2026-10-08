@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">System Dashboard</h2>
+        <p class="text-muted small mb-0">AI-Powered Facial Sketch and Image Similarity Search Control Center</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sketch_search' %}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-brush me-1"></i> New Sketch Search
+        </a>
+        <a href="{% url 'live_camera' %}" class="btn btn-danger shadow-sm">
+            <i class="bi bi-webcam me-1"></i> Launch Live Camera
+        </a>
+    </div>
+</div>
+
+<!-- 4 Key Statistic Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Total Candidates</span>
+                    <h3 class="fw-bold my-1 text-primary">{{ total_candidates }}</h3>
+                    <small class="text-muted"><i class="bi bi-database me-1"></i>In MongoDB Reference</small>
+                </div>
+                <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Total Searches</span>
+                    <h3 class="fw-bold my-1 text-info">{{ total_searches }}</h3>
+                    <small class="text-muted"><i class="bi bi-search me-1"></i>Sketch & Webcam</small>
+                </div>
+                <div class="stat-icon-wrapper bg-info-subtle text-info">
+                    <i class="bi bi-search-heart-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Today's Searches</span>
+                    <h3 class="fw-bold my-1 text-success">{{ today_searches }}</h3>
+                    <small class="text-muted"><i class="bi bi-calendar-event me-1"></i>Active Today</small>
+                </div>
+                <div class="stat-icon-wrapper bg-success-subtle text-success">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold text-uppercase">Avg Processing Time</span>
+                    <h3 class="fw-bold my-1 text-warning">{{ avg_processing_time }}s</h3>
+                    <small class="text-muted"><i class="bi bi-stopwatch me-1"></i>End-to-End Latency</small>
+                </div>
+                <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Architectural Workflow Section -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white py-3">
+        <div class="fw-bold text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-diagram-3-fill text-primary"></i>
+            <span>System Recognition Pipeline & Workflow Architecture</span>
+        </div>
+    </div>
+    <div class="card-body bg-light-subtle py-3">
+        <div class="row g-2 align-items-center text-center">
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-upload text-primary d-block fs-4 mb-1"></i>
+                    1. Upload Sketch / Frame
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-person-bounding-box text-info d-block fs-4 mb-1"></i>
+                    2. Detect Face (YuNet DNN)
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-sliders text-success d-block fs-4 mb-1"></i>
+                    3. CLAHE & Landmark Align
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-cpu text-warning d-block fs-4 mb-1"></i>
+                    4. SFace 128-d Embedding
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-calculator text-danger d-block fs-4 mb-1"></i>
+                    5. Cosine / Euclidean Matching
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-sort-numeric-down text-indigo d-block fs-4 mb-1"></i>
+                    6. Top-K Ranking
+                </div>
+            </div>
+            <div class="col-auto workflow-arrow"><i class="bi bi-arrow-right"></i></div>
+            <div class="col">
+                <div class="workflow-step">
+                    <i class="bi bi-trophy text-success d-block fs-4 mb-1"></i>
+                    7. Candidate Matches
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Searches Table -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark"><i class="bi bi-clock-history me-2 text-primary"></i>Recent Searches</span>
+                <a href="{% url 'searches:history' %}" class="btn btn-sm btn-outline-secondary">View All History</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Type</th>
+                                <th>Search ID</th>
+                                <th>Top Candidate</th>
+                                <th>Similarity</th>
+                                <th>Latency</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if recent_searches %}
+                                {% for s in recent_searches %}
+                                    <tr>
+                                        <td>
+                                            {% if s.search_type == 'SKETCH' %}
+                                                <span class="badge bg-primary-subtle text-primary"><i class="bi bi-brush me-1"></i>Sketch</span>
+                                            {% elif s.search_type == 'WEBCAM' %}
+                                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-webcam me-1"></i>Webcam</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary-subtle text-secondary">{{ s.search_type }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'result_detail' s.search_id %}" class="fw-semibold text-decoration-none">
+                                                {{ s.search_id|truncatechars:18 }}
+                                            </a>
+                                        </td>
+                                        <td>{{ s.top_candidate|default:"N/A" }}</td>
+                                        <td>
+                                            <span class="fw-bold {% if s.similarity >= 80 %}text-success{% elif s.similarity >= 65 %}text-warning{% else %}text-muted{% endif %}">
+                                                {{ s.similarity }}%
+                                            </span>
+                                        </td>
+                                        <td class="text-muted small font-monospace">{{ s.processing_time }}s</td>
+                                        <td>
+                                            <a href="{% url 'result_detail' s.search_id %}" class="btn btn-sm btn-light">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+                                        No searches performed yet. Try running a sketch search or live webcam test!
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status & Quick Links -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-shield-check me-2 text-success"></i>System Health & Services</span>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>MongoDB Database</strong><br>
+                            <span class="text-muted">Direct PyMongo Connection</span>
+                        </div>
+                        {% if mongo_ok %}
+                            <span class="badge bg-success">Online</span>
+                        {% else %}
+                            <span class="badge bg-danger">Offline</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>Face Detector (YuNet DNN)</strong><br>
+                            <span class="text-muted">Multi-face & Landmark model</span>
+                        </div>
+                        <span class="badge bg-success">Loaded</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>Embeddings Engine (SFace)</strong><br>
+                            <span class="text-muted">128-D Unit Normalized Space</span>
+                        </div>
+                        <span class="badge bg-success">Active</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>Session Authentication</strong><br>
+                            <span class="text-muted">Tamper-proof Signed Cookie</span>
+                        </div>
+                        <span class="badge bg-info text-dark">Active</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Quick Launch Cards -->
+        <div class="card border-0 shadow-sm rounded-3 bg-primary text-white p-3">
+            <h5 class="fw-bold mb-1"><i class="bi bi-camera-fill me-2"></i>Multi-Face Webcam</h5>
+            <p class="small text-white-50 mb-3">Detect multiple faces live in the camera frame, extract feature vectors, and rank reference candidates.</p>
+            <a href="{% url 'live_camera' %}" class="btn btn-light btn-sm fw-bold">
+                Launch Webcam Studio <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

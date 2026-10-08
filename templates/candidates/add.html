@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Add Reference Candidate - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Add Reference Candidate</h2>
+                <p class="text-muted small mb-0">Enroll a new subject into the reference database and extract their 128-d facial embedding.</p>
+            </div>
+            <a href="{% url 'candidates:list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to List
+            </a>
+        </div>
+
+        {% if errors %}
+            <div class="alert alert-danger shadow-sm mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> Validation Errors:</h6>
+                <ul class="mb-0 ps-3">
+                    {% for err in errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'candidates:add' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Candidate ID <span class="text-danger">*</span></label>
+                            <input type="text" name="candidate_id" class="form-control" placeholder="e.g. CAN-007" required value="{{ form_data.candidate_id|default:'' }}">
+                            <small class="text-muted">Unique identification code.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Candidate full name" required value="{{ form_data.name|default:'' }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Age</label>
+                            <input type="number" name="age" class="form-control" placeholder="e.g. 30" min="0" max="130" value="{{ form_data.age|default:'' }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="Unknown">Unknown</option>
+                                <option value="Male" {% if form_data.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if form_data.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if form_data.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="Active" {% if form_data.status == 'Active' %}selected{% endif %}>Active</option>
+                                <option value="Under Review" {% if form_data.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                <option value="Archived" {% if form_data.status == 'Archived' %}selected{% endif %}>Archived</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary">Reference Portrait Photograph <span class="text-danger">*</span></label>
+                            <input type="file" name="reference_image" class="form-control" accept=".jpg,.jpeg,.png" required onchange="previewCandidateImage(this)">
+                            <small class="text-muted">High-resolution, front-facing portrait (JPG, JPEG, PNG, max 10MB). SFace will automatically align the face and extract the 128-d embedding.</small>
+                        </div>
+
+                        <div class="col-12 text-center d-none" id="addImgPreviewBox">
+                            <img id="addImgPreview" src="#" alt="Preview" class="candidate-preview-lg shadow-sm">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary">Case & Reference Notes</label>
+                            <textarea name="notes" class="form-control" rows="3" placeholder="Optional background details or case investigation reference notes...">{{ form_data.notes|default:'' }}</textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex justify-content-end gap-2">
+                            <a href="{% url 'candidates:list' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="bi bi-save me-1"></i> Enroll Candidate
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewCandidateImage(input) {
+    const box = document.getElementById('addImgPreviewBox');
+    const img = document.getElementById('addImgPreview');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            box.classList.remove('d-none');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}

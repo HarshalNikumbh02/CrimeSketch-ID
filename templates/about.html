@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}About CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">About CrimeSketch-ID</h2>
+        <p class="text-muted small mb-0">AI-Powered Facial Sketch and Image Similarity Search System</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Overview Card -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-info-circle text-primary me-2"></i>Academic Case Study & System Objective</span>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>CrimeSketch-ID</strong> is an academic computer-vision and web application demonstrating similarity ranking between forensic facial sketches, composite drawings, photographs, and live video frames.
+                </p>
+                <p>
+                    In forensic investigation research, witness descriptions often yield hand-drawn or digital composite sketches. Comparing a cross-modal sketch against a database of natural photographs requires mapping both representations into a shared mathematical feature space where geometric and identity distances can be measured.
+                </p>
+                <h6 class="fw-bold text-dark mt-4">Core Mathematical Foundations:</h6>
+                <ul>
+                    <li>
+                        <strong>Face Detection & 5-Point Alignment:</strong> OpenCV YuNet predicts bounding boxes and coordinates for both eyes, nose tip, and mouth corners.
+                    </li>
+                    <li>
+                        <strong>Feature Space Mapping:</strong> A deep convolutional neural network (SFace) transforms aligned 112&times;112 face patches into 128-dimensional L2-normalized vectors.
+                    </li>
+                    <li>
+                        <strong>Similarity Computation:</strong> Feature vectors are compared using Cosine Similarity (\( \cos \theta = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|} \)) and Euclidean Distance (\( \|\mathbf{u} - \mathbf{v}\|_2 \)).
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ethical & Legal Disclaimer Card -->
+        <div class="card border-warning shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-warning-subtle text-dark py-3">
+                <span class="fw-bold"><i class="bi bi-shield-exclamation text-warning me-2"></i>Ethical and Legal Notice</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-3">
+                    <strong>Mandatory Academic Disclaimer:</strong> {{ system_disclaimer }}
+                </div>
+                <p class="small text-muted mb-0">
+                    The software does not declare or confirm identity, guilt, or criminal responsibility. Matching candidates are ranked strictly by mathematical feature proximity. Forensic deployment in real-world jurisdictions mandates strict chain-of-custody, human forensic expert review, and legal authorization under applicable laws.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Summary Column -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-stack text-info me-2"></i>Technology Stack</span>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Backend Framework</span>
+                        <strong>Django & DRF</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Database</span>
+                        <strong>MongoDB (PyMongo)</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Face Detector</span>
+                        <strong>OpenCV YuNet DNN</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Feature Extractor</span>
+                        <strong>SFace (128-D)</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Machine Learning</span>
+                        <strong>PyTorch / NumPy</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Frontend UI</span>
+                        <strong>Bootstrap 5 & Icons</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Interactive Video</span>
+                        <strong>HTML5 / WebRTC</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-3 bg-light p-3 small text-muted">
+            <h6 class="fw-bold text-dark mb-1">Architecture Note</h6>
+            <p class="mb-0">
+                This project uses a clean, pure MongoDB persistence layer. Django's default SQLite database is completely omitted, eliminating SQL database dependencies while storing candidates, search audit trails, and evaluations in MongoDB.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+[
+  {
+    "probe_image": "probe_sketch_CAN-001.jpg",
+    "target_candidate_id": "CAN-001",
+    "candidate_name": "Demo Candidate 001"
+  },
+  {
+    "probe_image": "probe_sketch_CAN-002.jpg",
+    "target_candidate_id": "CAN-002",
+    "candidate_name": "Demo Candidate 002"
+  },
+  {
+    "probe_image": "probe_sketch_CAN-003.jpg",
+    "target_candidate_id": "CAN-003",
+    "candidate_name": "Demo Candidate 003"
+  },
+  {
+    "probe_image": "probe_sketch_CAN-004.jpg",
+    "target_candidate_id": "CAN-004",
+    "candidate_name": "Demo Candidate 004"
+  },
+  {
+    "probe_image": "probe_sketch_CAN-005.jpg",
+    "target_candidate_id": "CAN-005",
+    "candidate_name": "Demo Candidate 005"
+  },
+  {
+    "probe_image": "probe_sketch_CAN-006.jpg",
+    "target_candidate_id": "CAN-006",
+    "candidate_name": "Demo Candidate 006"
+  }
+]

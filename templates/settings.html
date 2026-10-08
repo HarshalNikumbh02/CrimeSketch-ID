@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}System Settings - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">System & Recognition Configuration</h2>
+        <p class="text-muted small mb-0">Configure default algorithmic parameters and user interface preferences.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-sliders text-primary me-2"></i>Algorithmic Preferences</span>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'settings' %}">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Default Similarity Distance Metric</label>
+                        <select name="similarity_metric" class="form-select">
+                            <option value="cosine" {% if config.similarity_metric == 'cosine' %}selected{% endif %}>
+                                Cosine Similarity (Normalized dot-product across 128-d unit sphere)
+                            </option>
+                            <option value="euclidean" {% if config.similarity_metric == 'euclidean' %}selected{% endif %}>
+                                Euclidean Distance (L2 norm ||u - v||2)
+                            </option>
+                        </select>
+                        <small class="text-muted">Cosine metric is recommended for high-dimensional facial embeddings.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Default Top-K Candidate Retrieval Limit</label>
+                        <select name="top_k" class="form-select">
+                            <option value="5" {% if config.top_k == 5 %}selected{% endif %}>Top 5 Candidates</option>
+                            <option value="10" {% if config.top_k == 10 %}selected{% endif %}>Top 10 Candidates (Default)</option>
+                            <option value="20" {% if config.top_k == 20 %}selected{% endif %}>Top 20 Candidates</option>
+                            <option value="50" {% if config.top_k == 50 %}selected{% endif %}>Top 50 Candidates</option>
+                        </select>
+                        <small class="text-muted">Number of ranked reference candidates returned per search operation.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">YuNet Face Detection Confidence Threshold</label>
+                        <select name="detection_threshold" class="form-select">
+                            <option value="0.35" {% if config.detection_threshold == 0.35 %}selected{% endif %}>0.35 - Sensitive (detects faint pencil sketches & distant faces)</option>
+                            <option value="0.45" {% if config.detection_threshold == 0.45 %}selected{% endif %}>0.45 - Balanced (Recommended)</option>
+                            <option value="0.60" {% if config.detection_threshold == 0.60 %}selected{% endif %}>0.60 - Strict (reduces false detections in busy backgrounds)</option>
+                        </select>
+                        <small class="text-muted">Minimum confidence required for bounding box extraction.</small>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                            <i class="bi bi-save me-1"></i> Save Configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

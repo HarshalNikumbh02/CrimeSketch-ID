@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}System Help & User Guide - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">System Help & Operational Guide</h2>
+        <p class="text-muted small mb-0">Step-by-step procedures, technical workflow explanation, and troubleshooting documentation.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Sketch Search Workflow Guide -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-brush text-primary me-2"></i>How Forensic Sketch Search Works</span>
+            </div>
+            <div class="card-body">
+                <div class="timeline ps-2">
+                    <div class="mb-3">
+                        <strong class="text-primary">1. Upload Image / Sketch</strong>
+                        <p class="text-muted small mb-0">Select a composite sketch, pencil portrait, or reference photo (JPG, PNG). The system accepts standard image files.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-primary">2. Face Detection & CLAHE Preprocessing</strong>
+                        <p class="text-muted small mb-0">OpenCV YuNet deep neural network detects facial bounding boxes and 5 key facial landmarks. CLAHE contrast adjustment balances pencil strokes.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-primary">3. Landmark Alignment & Embedding</strong>
+                        <p class="text-muted small mb-0">The face is aligned using affine transformation (112&times;112 canvas) and transformed into a 128-dimensional unit feature vector via SFace CNN.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-primary">4. Similarity Engine Comparison</strong>
+                        <p class="text-muted small mb-0">The query vector is compared against all candidates stored in MongoDB using Cosine Similarity or Euclidean Distance.</p>
+                    </div>
+                    <div>
+                        <strong class="text-primary">5. Candidate Ranking Display</strong>
+                        <p class="text-muted small mb-0">Results are sorted from highest similarity to lowest, returning the Top-K closest reference candidates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Webcam Workflow Guide -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-webcam text-danger me-2"></i>How Multi-Face Webcam Studio Works</span>
+            </div>
+            <div class="card-body">
+                <div class="timeline ps-2">
+                    <div class="mb-3">
+                        <strong class="text-danger">1. Start Camera Feed</strong>
+                        <p class="text-muted small mb-0">Click "Start Camera" to initialize your built-in laptop webcam via browser <code>navigator.mediaDevices.getUserMedia()</code>.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-danger">2. Multi-Face Capture & Detection</strong>
+                        <p class="text-muted small mb-0">Click "Analyze Multi-Face". The system captures the video canvas and sends it to the backend where YuNet locates all faces in the frame.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-danger">3. Individual Face Cropping & Embedding</strong>
+                        <p class="text-muted small mb-0">Each detected person (Face #1, Face #2, etc.) is cropped and converted into its own 128-d embedding vector.</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-danger">4. Candidate Matching & Labeling</strong>
+                        <p class="text-muted small mb-0">Each face is individually matched against MongoDB candidates. Bounding boxes are drawn with candidate names and similarity percentages.</p>
+                    </div>
+                    <div>
+                        <strong class="text-danger">5. Search Logging</strong>
+                        <p class="text-muted small mb-0">The search event is logged to MongoDB with execution latency telemetry and candidate rankings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Troubleshooting Card -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-tools text-warning me-2"></i>Frequently Asked Questions & Troubleshooting</span>
+            </div>
+            <div class="card-body">
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Why does the system report "No face detected" on a sketch?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                If a sketch has very faint lines or unusual artistic stylization, the neural network may fail to detect standard eye/nose landmarks. Try using sketches with darker pencil strokes, clearer eye pupils, or adjust the detection threshold to 0.35 in Settings.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How do I allow camera access in my browser?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                When clicking "Start Camera", your browser will display a permission prompt asking for access to your camera. Click "Allow". If blocked, look for the camera icon in your browser URL bar and change permission to "Allow".
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                What does the similarity score represent?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body small text-muted">
+                                The similarity score is a mathematical distance calculation in 128-dimensional embedding space. It reflects relative geometric and feature similarity between the query face and the reference photograph. It is <strong>probabilistic</strong> and must NEVER be treated as proof of identity or evidence of guilt.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

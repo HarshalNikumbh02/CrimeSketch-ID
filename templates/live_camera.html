@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Live Camera Multi-Face Recognition - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Multi-Face Live Webcam Studio</h2>
+        <p class="text-muted small mb-0">Capture real-time laptop webcam frames, detect multiple faces simultaneously, and rank similarity against the reference database.</p>
+    </div>
+    <div>
+        <span id="cameraStatusBadge" class="badge bg-secondary">Camera Inactive</span>
+    </div>
+</div>
+
+<!-- Alert notification -->
+<div id="cameraAlert" class="alert alert-danger d-none py-2 px-3 small mb-3"></div>
+
+<div class="row g-4">
+    <!-- Camera Viewport and Controls Column -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark"><i class="bi bi-camera-video-fill text-danger me-2"></i>Live Webcam Stream</span>
+                <div class="d-flex gap-2">
+                    <select id="webcamMetric" class="form-select form-select-sm" style="width: auto;">
+                        <option value="cosine" selected>Cosine Similarity</option>
+                        <option value="euclidean">Euclidean Distance</option>
+                    </select>
+                    <select id="webcamTopK" class="form-select form-select-sm" style="width: auto;">
+                        <option value="3">Top 3</option>
+                        <option value="5" selected>Top 5</option>
+                        <option value="10">Top 10</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <!-- Video & Overlay Canvas Container -->
+                <div class="webcam-container mb-3 position-relative text-center bg-dark rounded">
+                    <video id="webcamVideo" autoplay playsinline muted style="width: 100%; max-height: 480px; object-fit: contain;"></video>
+                    <canvas id="webcamCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <button type="button" id="btnStartCamera" class="btn btn-success shadow-sm">
+                        <i class="bi bi-camera-video me-1"></i> Start Camera
+                    </button>
+                    <button type="button" id="btnStopCamera" class="btn btn-secondary shadow-sm" disabled>
+                        <i class="bi bi-camera-video-off me-1"></i> Stop Camera
+                    </button>
+                    <button type="button" id="btnCaptureFrame" class="btn btn-outline-primary shadow-sm" disabled>
+                        <i class="bi bi-camera me-1"></i> Capture Frame
+                    </button>
+                    <button type="button" id="btnAnalyzeWebcam" class="btn btn-primary btn-lg shadow-sm px-4" disabled>
+                        <i class="bi bi-cpu me-1"></i> Analyze Multi-Face
+                    </button>
+                    <button type="button" id="btnClearWebcam" class="btn btn-outline-secondary shadow-sm">
+                        <i class="bi bi-x-circle me-1"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instruction card -->
+        <div class="card border-0 shadow-sm rounded-3 mt-3 bg-light-subtle">
+            <div class="card-body p-3 small">
+                <div class="fw-semibold text-dark mb-1"><i class="bi bi-info-circle-fill text-primary me-1"></i> Multi-Person Operational Guide</div>
+                <ul class="text-muted mb-0 ps-3">
+                    <li>Grant your browser camera access when prompted (built-in webcam).</li>
+                    <li>The OpenCV YuNet detector tracks <strong>multiple faces</strong> simultaneously in the captured frame.</li>
+                    <li>Each detected face is independently aligned, cropped, embedded via SFace, and matched against candidates in MongoDB.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-Face Recognition Results Column -->
+    <div class="col-lg-5">
+        <div id="webcamResultsPanel" class="d-none">
+            <div class="card border-0 shadow-sm rounded-3 mb-3">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <span id="detectedFacesSummary" class="fw-bold text-dark fs-5">
+                        <i class="bi bi-people-fill text-primary me-2"></i>Detected Faces: 0
+                    </span>
+                    <span id="webcamTimingBadge" class="badge bg-warning text-dark font-monospace fs-6">0.0s</span>
+                </div>
+                <div class="card-body p-3">
+                    <div id="facesListContainer">
+                        <!-- Populated dynamically by live_camera.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder when no capture is analyzed -->
+        <div class="card border-0 shadow-sm rounded-3 text-center py-5" id="webcamPlaceholder">
+            <div class="card-body">
+                <i class="bi bi-person-bounding-box text-muted" style="font-size: 3.5rem;"></i>
+                <h5 class="fw-bold text-secondary mt-3">Ready for Multi-Face Stream</h5>
+                <p class="text-muted small mx-auto" style="max-width: 320px;">
+                    Start your webcam and click <strong>"Analyze Multi-Face"</strong> to detect faces and compute similarity rankings.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/live_camera.js"></script>
+{% endblock %}

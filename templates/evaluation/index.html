@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}System Evaluation - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">System Evaluation & Accuracy Benchmark</h2>
+        <p class="text-muted small mb-0">Evaluate mathematical recognition accuracy (Top-1, Top-5, Top-10, Precision, Recall, F1) on forensic probe sketches.</p>
+    </div>
+    <div class="d-flex gap-2">
+        {% if is_admin %}
+            {% if not dataset_ready %}
+                <form method="POST" action="{% url 'evaluation:setup_benchmark' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary shadow-sm">
+                        <i class="bi bi-box-arrow-in-down me-1"></i> Initialize Demo Benchmark
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'evaluation:run' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success shadow-sm">
+                        <i class="bi bi-play-circle-fill me-1"></i> Run Benchmark Evaluation
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% if not dataset_ready %}
+    <!-- Mandatory Notice when dataset is not configured -->
+    <div class="card border-warning shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4 text-center">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-2 d-block"></i>
+            <h4 class="fw-bold text-dark">No evaluation dataset configured.</h4>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                The system strictly refuses to manufacture synthetic or fake evaluation numbers. To run a genuine evaluation, configure a ground-truth dataset in <code>media/eval_dataset/</code> with probe sketches and <code>ground_truth.json</code> mapping.
+            </p>
+            {% if is_admin %}
+                <form method="POST" action="{% url 'evaluation:setup_benchmark' %}" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                        <i class="bi bi-magic me-1"></i> Generate Demo Benchmark from Candidates
+                    </button>
+                </form>
+            {% else %}
+                <p class="small text-secondary">Contact an administrator to initialize the evaluation dataset benchmark.</p>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <!-- Dataset Ready Status -->
+    <div class="alert alert-success d-flex justify-content-between align-items-center mb-4 shadow-sm">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill fs-4"></i>
+            <div>
+                <strong>Evaluation Benchmark Configured:</strong>
+                <span>Dataset active in <code>media/eval_dataset/</code> with ground truth verification.</span>
+            </div>
+        </div>
+        {% if is_admin %}
+            <form method="POST" action="{% url 'evaluation:run' %}" class="mb-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">
+                    <i class="bi bi-arrow-repeat me-1"></i> Re-Run Evaluation
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Latest Evaluation Metrics Cards -->
+    {% if latest_run %}
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark"><i class="bi bi-award-fill text-warning me-2"></i>Latest Evaluation Run: {{ latest_run.run_id }}</span>
+                <span class="small text-muted">{{ latest_run.timestamp|date:"M d, Y H:i:s" }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <span class="text-muted small fw-semibold text-uppercase d-block">Top-1 Accuracy</span>
+                            <h2 class="fw-bold my-1 text-primary">{{ latest_run.top1_accuracy }}%</h2>
+                            <small class="text-muted">Exact Rank-1 Hit</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <span class="text-muted small fw-semibold text-uppercase d-block">Top-5 Accuracy</span>
+                            <h2 class="fw-bold my-1 text-success">{{ latest_run.top5_accuracy }}%</h2>
+                            <small class="text-muted">Candidate in Top 5</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <span class="text-muted small fw-semibold text-uppercase d-block">Top-10 Accuracy</span>
+                            <h2 class="fw-bold my-1 text-info">{{ latest_run.top10_accuracy }}%</h2>
+                            <small class="text-muted">Candidate in Top 10</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <span class="text-muted small fw-semibold text-uppercase d-block">F1-Score</span>
+                            <h2 class="fw-bold my-1 text-danger">{{ latest_run.f1_score }}%</h2>
+                            <small class="text-muted">Precision: {{ latest_run.precision }}% &bull; Recall: {{ latest_run.recall }}%</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 bg-light-subtle rounded small d-flex justify-content-between align-items-center">
+                    <span>Queries Evaluated: <strong>{{ latest_run.evaluated_queries }}</strong></span>
+                    <span>Average Retrieval Time: <strong class="font-monospace text-warning">{{ latest_run.avg_search_time }}s</strong></span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+<!-- Historical Evaluation Runs Table -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-3">
+        <span class="fw-bold text-dark"><i class="bi bi-clock-history text-secondary me-2"></i>Historical Evaluation Benchmarks</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Run ID</th>
+                        <th>Dataset</th>
+                        <th>Queries</th>
+                        <th>Top-1 Acc</th>
+                        <th>Top-5 Acc</th>
+                        <th>Top-10 Acc</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1</th>
+                        <th>Avg Latency</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if runs %}
+                        {% for r in runs %}
+                            <tr>
+                                <td class="font-monospace fw-semibold">{{ r.run_id }}</td>
+                                <td>{{ r.dataset_name }}</td>
+                                <td>{{ r.evaluated_queries }}</td>
+                                <td><span class="fw-bold text-primary">{{ r.top1_accuracy }}%</span></td>
+                                <td><span class="fw-bold text-success">{{ r.top5_accuracy }}%</span></td>
+                                <td><span class="fw-bold text-info">{{ r.top10_accuracy }}%</span></td>
+                                <td>{{ r.precision }}%</td>
+                                <td>{{ r.recall }}%</td>
+                                <td><strong>{{ r.f1_score }}%</strong></td>
+                                <td class="font-monospace text-muted small">{{ r.avg_search_time }}s</td>
+                                <td class="text-muted small">{{ r.timestamp|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center py-4 text-muted">
+                                No previous evaluation runs recorded.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

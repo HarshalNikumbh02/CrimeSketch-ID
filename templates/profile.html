@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Investigator Profile & Security</h2>
+        <p class="text-muted small mb-0">Manage account credentials and system profile information.</p>
+    </div>
+</div>
+
+{% if success_msg %}
+    <div class="alert alert-success alert-dismissible fade show shadow-sm">
+        <i class="bi bi-check-circle-fill me-1"></i> {{ success_msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{% endif %}
+
+{% if error_msg %}
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error_msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{% endif %}
+
+<div class="row g-4">
+    <!-- Account Information -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2"></i>Account Details</span>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_profile">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Username</label>
+                        <input type="text" class="form-control" value="{{ user_doc.username }}" disabled>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-secondary">First Name</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user_doc.first_name|default:'' }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-secondary">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user_doc.last_name|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Email Address</label>
+                        <input type="email" name="email" class="form-control" value="{{ user_doc.email|default:'' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">System Role</label>
+                        <input type="text" class="form-control text-capitalize" value="{{ user_doc.role|default:'Investigator' }}" disabled>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary shadow-sm">
+                            <i class="bi bi-check-lg me-1"></i> Update Details
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Change -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-shield-lock text-warning me-2"></i>Change Security Password</span>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Current Password</label>
+                        <input type="password" name="current_password" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">New Password</label>
+                        <input type="password" name="new_password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Re-type new password" required minlength="6">
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-warning shadow-sm">
+                            <i class="bi bi-key-fill me-1"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

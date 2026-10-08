@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Search Result Details - {{ record.search_id }} - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Forensic Search Report</h2>
+        <span class="badge bg-secondary font-monospace">{{ record.search_id }}</span>
+        {% if record.search_type == 'SKETCH' %}
+            <span class="badge bg-primary-subtle text-primary ms-1"><i class="bi bi-brush me-1"></i>Sketch Search</span>
+        {% elif record.search_type == 'WEBCAM' %}
+            <span class="badge bg-danger-subtle text-danger ms-1"><i class="bi bi-webcam me-1"></i>Live Webcam Analysis</span>
+        {% endif %}
+    </div>
+    <div>
+        <a href="{% url 'searches:history' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to History
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Visual Images Comparison Card -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-images text-primary me-2"></i>Query Images</span>
+            </div>
+            <div class="card-body p-3 text-center">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="small text-muted fw-semibold d-block mb-1">Input Image</label>
+                        <img src="/media/{{ record.input_image }}" alt="Query Input" class="img-thumbnail shadow-sm rounded" style="max-height: 200px; width: auto;">
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted fw-semibold d-block mb-1">Annotated Detection</label>
+                        <img src="/media/{{ record.annotated_image }}" alt="Annotated Detection" class="img-thumbnail shadow-sm rounded" style="max-height: 200px; width: auto;">
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <!-- Telemetry table -->
+                <ul class="list-group list-group-flush text-start small">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Initiated By:</span>
+                        <strong>{{ record.user_id|default:"anonymous" }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Detected Faces:</span>
+                        <span class="badge bg-info text-dark">{{ record.number_of_faces }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Metric Strategy:</span>
+                        <strong class="text-capitalize">{{ record.metric_used|default:"cosine" }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Execution Timestamp:</span>
+                        <span>{{ record.created_at|date:"Y-m-d H:i:s"|default:record.created_at }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Total Processing Time:</span>
+                        <strong class="font-monospace text-warning">{{ record.processing_time }}s</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranked Candidates Results Column -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-bold text-dark"><i class="bi bi-trophy-fill text-warning me-2"></i>Ranked Reference Candidates</span>
+                    <small class="text-muted d-block" style="font-size: 0.75rem;">Probabilistic similarity matches from reference MongoDB collection</small>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 50px;">Rank</th>
+                                <th>Portrait</th>
+                                <th>Candidate</th>
+                                <th>Similarity</th>
+                                <th>Distance</th>
+                                <th>Confidence</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if record.results %}
+                                {% for cand in record.results %}
+                                    <tr>
+                                        <td class="fw-bold text-center">{{ cand.rank }}</td>
+                                        <td>
+                                            <img src="/media/{{ cand.reference_image }}" alt="{{ cand.name }}" class="candidate-thumb shadow-sm">
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">{{ cand.name }}</div>
+                                            <small class="text-muted font-monospace">{{ cand.candidate_id }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress-bar {% if cand.similarity >= 80 %}bg-success{% elif cand.similarity >= 65 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ cand.similarity }}%"></div>
+                                                </div>
+                                                <span class="fw-bold">{{ cand.similarity }}%</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted font-monospace small">{{ cand.distance }}</td>
+                                        <td>
+                                            <span class="badge {% if cand.confidence == 'High' %}badge-similarity-high{% elif cand.confidence == 'Medium' %}badge-similarity-medium{% else %}badge-similarity-low{% endif %}">
+                                                {{ cand.confidence }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'candidates:detail' cand.candidate_id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-person-badge"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">No candidate results logged for this search.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

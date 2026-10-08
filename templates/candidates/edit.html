@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Candidate {{ candidate.candidate_id }} - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Edit Candidate Profile</h2>
+                <span class="badge bg-secondary font-monospace">{{ candidate.candidate_id }}</span>
+            </div>
+            <a href="{% url 'candidates:detail' candidate.candidate_id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Profile
+            </a>
+        </div>
+
+        {% if errors %}
+            <div class="alert alert-danger shadow-sm mb-4">
+                <ul class="mb-0 ps-3">
+                    {% for err in errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <form method="POST" action="{% url 'candidates:edit' candidate.candidate_id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Candidate ID</label>
+                            <input type="text" class="form-control" value="{{ candidate.candidate_id }}" disabled>
+                            <small class="text-muted">ID is immutable once assigned.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" value="{{ candidate.name }}" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Age</label>
+                            <input type="number" name="age" class="form-control" value="{{ candidate.age|default:'' }}" min="0" max="130">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="Unknown" {% if candidate.gender == 'Unknown' %}selected{% endif %}>Unknown</option>
+                                <option value="Male" {% if candidate.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if candidate.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if candidate.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold text-secondary">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="Active" {% if candidate.status == 'Active' %}selected{% endif %}>Active</option>
+                                <option value="Under Review" {% if candidate.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                <option value="Archived" {% if candidate.status == 'Archived' %}selected{% endif %}>Archived</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary">Replace Reference Portrait</label>
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <img src="/media/{{ candidate.reference_image }}" alt="Current" class="candidate-thumb shadow-sm">
+                                <span class="small text-muted">Current enrolled portrait</span>
+                            </div>
+                            <input type="file" name="reference_image" class="form-control" accept=".jpg,.jpeg,.png">
+                            <small class="text-muted">Leave empty to keep the current photograph. If a new photo is uploaded, facial embeddings will be automatically recomputed.</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary">Case & Reference Notes</label>
+                            <textarea name="notes" class="form-control" rows="3">{{ candidate.notes|default:'' }}</textarea>
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex justify-content-end gap-2">
+                            <a href="{% url 'candidates:detail' candidate.candidate_id %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

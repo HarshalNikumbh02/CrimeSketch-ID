@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}System Analytics - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">System Analytics & Performance Metrics</h2>
+        <p class="text-muted small mb-0">Aggregate operational intelligence and algorithm metrics calculated across MongoDB records.</p>
+    </div>
+</div>
+
+<!-- 6 Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Candidates</span>
+            <h3 class="fw-bold my-1 text-primary">{{ total_candidates }}</h3>
+            <small class="text-muted">Enrolled</small>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Total Searches</span>
+            <h3 class="fw-bold my-1 text-info">{{ total_searches }}</h3>
+            <small class="text-muted">Historical</small>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Sketch Searches</span>
+            <h3 class="fw-bold my-1 text-primary">{{ sketch_searches }}</h3>
+            <small class="text-muted">Composites</small>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Webcam Scans</span>
+            <h3 class="fw-bold my-1 text-danger">{{ webcam_searches }}</h3>
+            <small class="text-muted">Multi-Face</small>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Avg Latency</span>
+            <h3 class="fw-bold my-1 text-warning">{{ avg_processing_time }}s</h3>
+            <small class="text-muted">Total Time</small>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-2">
+        <div class="card card-stat p-3 bg-white h-100 text-center">
+            <span class="text-muted small fw-semibold text-uppercase">Avg Similarity</span>
+            <h3 class="fw-bold my-1 text-success">{{ avg_similarity }}%</h3>
+            <small class="text-muted">Cosine Score</small>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-4">
+    <!-- Searches Per Day -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-graph-up text-primary me-2"></i>Searches Per Day (Last 7 Days)</span>
+            </div>
+            <div class="card-body">
+                <canvas id="searchesTimelineChart" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Type Breakdown -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-pie-chart text-info me-2"></i>Search Modality Ratio</span>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <div style="width: 240px; height: 240px;">
+                    <canvas id="typeRatioChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similarity Distribution Chart -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-bar-chart-fill text-success me-2"></i>Similarity Score Frequency Distribution</span>
+            </div>
+            <div class="card-body">
+                <canvas id="similarityDistChart" style="max-height: 260px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Searches Timeline Chart
+    const ctxTimeline = document.getElementById('searchesTimelineChart').getContext('2d');
+    new Chart(ctxTimeline, {
+        type: 'line',
+        data: {
+            labels: {{ day_labels|safe }},
+            datasets: [{
+                label: 'Search Inquiries',
+                data: {{ day_counts|safe }},
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#1d4ed8'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+
+    // 2. Type Ratio Doughnut Chart
+    const ctxType = document.getElementById('typeRatioChart').getContext('2d');
+    new Chart(ctxType, {
+        type: 'doughnut',
+        data: {
+            labels: ['Sketch Search', 'Webcam Multi-Face'],
+            datasets: [{
+                data: [{{ sketch_searches }}, {{ webcam_searches }}],
+                backgroundColor: ['#2563eb', '#ef4444'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // 3. Similarity Bands Chart
+    const ctxDist = document.getElementById('similarityDistChart').getContext('2d');
+    new Chart(ctxDist, {
+        type: 'bar',
+        data: {
+            labels: {{ sim_band_labels|safe }},
+            datasets: [{
+                label: 'Matches Count',
+                data: {{ sim_band_counts|safe }},
+                backgroundColor: ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,3 @@
+"""
+CrimeSketch-ID Analytics Package
+"""

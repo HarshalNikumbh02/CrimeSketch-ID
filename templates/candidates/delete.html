@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Candidate {{ candidate.candidate_id }} - CrimeSketch-ID{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card border-danger shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Candidate Deletion</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <img src="/media/{{ candidate.reference_image }}" alt="{{ candidate.name }}" class="candidate-preview-lg mx-auto shadow-sm mb-3">
+                <h4 class="fw-bold mb-1">{{ candidate.name }}</h4>
+                <p class="text-muted font-monospace mb-3">{{ candidate.candidate_id }}</p>
+                
+                <p class="text-danger small mb-4">
+                    Are you sure you want to permanently delete this candidate from the reference database? This action will remove the candidate record and their computed 128-d feature embedding.
+                </p>
+
+                <form method="POST" action="{% url 'candidates:delete' candidate.candidate_id %}">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'candidates:list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="bi bi-trash me-1"></i> Yes, Delete Permanently
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

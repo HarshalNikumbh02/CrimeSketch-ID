@@ -105,16 +105,80 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    let loadingInterval; // To hold our animation loop
+
     function setLoading(isLoading) {
         if (isLoading) {
             btnSubmit.disabled = true;
             if (spinner) spinner.classList.remove('d-none');
             if (resultsContainer) resultsContainer.classList.add('opacity-50');
+            
+            // Trigger CSS Scanner Animation from your custom_2.css
+            dropzone.classList.add('scan-effect');
+
+            // "Hollywood" Processing Text Animation
+            const loadingPhases = [
+                "Initializing YuNet DNN...",
+                "Aligning 5-Point Landmarks...",
+                "Extracting 128-D SFace Vector...",
+                "Computing Similarity Distances...",
+                "Ranking Candidate Database..."
+            ];
+            let phaseIndex = 0;
+            
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> <span id="loadingText">${loadingPhases[0]}</span>`;
+            
+            loadingInterval = setInterval(() => {
+                phaseIndex = (phaseIndex + 1) % loadingPhases.length;
+                const textSpan = document.getElementById('loadingText');
+                if (textSpan) textSpan.innerText = loadingPhases[phaseIndex];
+            }, 800); // Change text every 800ms
+
         } else {
+            clearInterval(loadingInterval);
             btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<i class="bi bi-search me-1"></i> Detect Face & Rank Candidates`;
+            dropzone.classList.remove('scan-effect');
+
             if (spinner) spinner.classList.add('d-none');
             if (resultsContainer) resultsContainer.classList.remove('opacity-50');
         }
+    }
+
+    // --- NEW: Official PDF Report Generation ---
+    // --- Official PDF Report Generation ---
+    const btnExportPDF = document.getElementById('btnExportPDF');
+    if (btnExportPDF) {
+        btnExportPDF.addEventListener('click', function() {
+            // Check if html2pdf loaded
+            if (typeof html2pdf === 'undefined') {
+                showError("PDF Library not loaded. Please refresh the page.");
+                return;
+            }
+
+            // Change button state to show it's working
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating PDF...';
+            this.disabled = true;
+
+            const element = document.getElementById('pdfExportArea');
+            
+            // Configuration for html2pdf
+            const opt = {
+                margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right
+                filename:     'CrimeSketch_Forensic_Report_' + new Date().getTime() + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0e1a' },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate the PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore button
+                this.innerHTML = originalText;
+                this.disabled = false;
+            });
+        });
     }
 
     function showError(msg) {

@@ -12,6 +12,7 @@ urlpatterns = [
     path('', dashboard_index, name='home'),
     path('dashboard/', include('dashboard.urls')),
     
+    
     # Direct Root Feature URLs as per specification
     path('sketch-search/', sketch_search_view, name='sketch_search'),
     path('live-camera/', live_camera_view, name='live_camera'),

@@ -3,61 +3,66 @@
 {% block title %}Login - CrimeSketch-ID{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+<div class="grid-bg"></div>
+
+<div class="login-wrapper">
     <div class="col-11 col-sm-9 col-md-7 col-lg-5 col-xl-4">
-        <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-body p-4 p-sm-5">
-                <div class="text-center mb-4">
-                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 64px; height: 64px;">
-                        <i class="bi bi-fingerprint fs-1"></i>
+        <div class="login-card p-4 p-sm-5">
+            <!-- Animated Brand Icon -->
+            <div class="text-center mb-4">
+                <div class="login-icon mx-auto mb-3">
+                    <i class="bi bi-fingerprint"></i>
+                </div>
+                <h3 class="login-title mb-1">CrimeSketch-ID</h3>
+                <p class="login-subtitle mb-0">Forensic AI Recognition Platform</p>
+            </div>
+
+            {% if error_message %}
+                <div class="alert alert-danger py-2 px-3 small mb-3 animate-fadeInUp">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Username or Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="admin" required autofocus value="admin">
                     </div>
-                    <h3 class="fw-bold mb-1">CrimeSketch-ID</h3>
-                    <p class="text-muted small">AI-Powered Facial Similarity Search</p>
                 </div>
 
-                {% if error_message %}
-                    <div class="alert alert-danger py-2 px-3 small mb-3">
-                        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error_message }}
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="••••••••" required value="Admin@123">
                     </div>
-                {% endif %}
-
-                <form method="POST" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-secondary">Username or Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-secondary"><i class="bi bi-person"></i></span>
-                            <input type="text" name="username" class="form-control" placeholder="admin" required autofocus value="admin">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-secondary">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-secondary"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" required value="Admin@123">
-                        </div>
-                    </div>
-
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
-                            <i class="bi bi-box-arrow-in-right me-2"></i> Authenticate & Enter
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Demo Credentials helper card -->
-                <div class="mt-4 p-3 bg-light rounded-3 border text-center small text-muted">
-                    <div class="fw-semibold text-dark mb-1"><i class="bi bi-key-fill text-warning me-1"></i> Academic Demo Credentials</div>
-                    <div>Username: <code>admin</code> &bull; Password: <code>Admin@123</code></div>
                 </div>
 
-                <!-- Academic Note -->
-                <div class="mt-3 text-center text-muted" style="font-size: 0.75rem;">
-                    Pure MongoDB Backend &bull; SFace 128-d Vector Space
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Authenticate & Enter
+                    </button>
                 </div>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div class="demo-credentials-box mt-4 text-center">
+                <div class="fw-semibold mb-1" style="color: var(--text-primary);">
+                    <i class="bi bi-key-fill me-1" style="color: var(--accent-amber);"></i> Demo Credentials
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Username: <code>admin</code> &bull; Password: <code>Admin@123</code>
+                </div>
+            </div>
+
+            <!-- Footer note -->
+            <div class="mt-3 text-center" style="font-size: 0.7rem; color: var(--text-dim);">
+                Pure MongoDB Backend &bull; SFace 128-d Vector Space
             </div>
         </div>
     </div>

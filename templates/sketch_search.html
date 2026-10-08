@@ -3,10 +3,10 @@
 {% block title %}Facial Sketch & Image Search - CrimeSketch-ID{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 animate-fadeInUp">
     <div>
         <h2 class="fw-bold mb-0">Facial Sketch & Image Similarity Search</h2>
-        <p class="text-muted small mb-0">Upload a forensic composite sketch or photograph to extract embeddings and rank reference candidates.</p>
+        <p class="small mb-0" style="color: var(--text-secondary);">Upload a forensic composite sketch or photograph to extract embeddings and rank reference candidates.</p>
     </div>
     <div>
         <a href="{% url 'live_camera' %}" class="btn btn-outline-danger">
@@ -17,10 +17,10 @@
 
 <div class="row g-4">
     <!-- Upload and Configuration Column -->
-    <div class="col-lg-5">
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white py-3">
-                <span class="fw-bold text-dark"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Upload Facial Sketch</span>
+    <div class="col-lg-5 animate-fadeInUp stagger-1">
+        <div class="card border-0">
+            <div class="card-header py-3">
+                <span class="fw-bold"><i class="bi bi-cloud-arrow-up-fill me-2" style="color: var(--accent-blue);"></i>Upload Facial Sketch</span>
             </div>
             <div class="card-body">
                 <!-- Error Box -->
@@ -34,41 +34,41 @@
 
                     <!-- Dropzone -->
                     <div class="dropzone-container mb-3" id="dropzone">
-                        <i class="bi bi-file-earmark-person fs-1 text-primary mb-2 d-block"></i>
+                        <i class="bi bi-file-earmark-person fs-1 mb-2 d-block" style="color: var(--accent-blue);"></i>
                         <h6 class="fw-semibold mb-1">Click to select or drag & drop sketch here</h6>
-                        <p class="text-muted small mb-0">Supported formats: JPG, JPEG, PNG (Max 15MB)</p>
+                        <p class="small mb-0" style="color: var(--text-secondary);">Supported formats: JPG, JPEG, PNG (Max 15MB)</p>
                         <input type="file" id="sketchInput" name="sketch_image" accept=".jpg,.jpeg,.png" class="d-none" required>
                     </div>
 
                     <!-- Client-side Preview Box -->
                     <div id="previewContainer" class="text-center mb-3 d-none">
-                        <label class="form-label small fw-semibold text-muted d-block">Input Preview:</label>
-                        <img id="previewImg" src="#" alt="Selected Image Preview" class="img-thumbnail shadow-sm rounded" style="max-height: 220px; object-fit: contain;">
+                        <label class="form-label small fw-semibold d-block" style="color: var(--text-secondary);">Input Preview:</label>
+                        <img id="previewImg" src="#" alt="Selected Image Preview" class="img-thumbnail" style="max-height: 220px; object-fit: contain;">
                     </div>
 
                     <!-- Algorithm Search Parameters -->
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label small fw-semibold text-secondary">Similarity Metric</label>
+                            <label class="form-label small fw-semibold">Similarity Metric</label>
                             <select name="metric" class="form-select form-select-sm" id="searchMetric">
-                                <option value="cosine" {% if default_metric == 'cosine' %}selected{% endif %}>Cosine Similarity (Recommended)</option>
+                                <option value="cosine" {% if default_metric == 'cosine' %}selected{% endif %}>Cosine Similarity</option>
                                 <option value="euclidean" {% if default_metric == 'euclidean' %}selected{% endif %}>Euclidean Distance</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label small fw-semibold text-secondary">Candidate Ranking Limit</label>
+                            <label class="form-label small fw-semibold">Ranking Limit</label>
                             <select name="top_k" class="form-select form-select-sm" id="searchTopK">
-                                <option value="5" {% if default_top_k == 5 %}selected{% endif %}>Top 5 Candidates</option>
-                                <option value="10" {% if default_top_k == 10 %}selected{% endif %}>Top 10 Candidates</option>
-                                <option value="20" {% if default_top_k == 20 %}selected{% endif %}>Top 20 Candidates</option>
-                                <option value="50" {% if default_top_k == 50 %}selected{% endif %}>Top 50 Candidates</option>
+                                <option value="5" {% if default_top_k == 5 %}selected{% endif %}>Top 5</option>
+                                <option value="10" {% if default_top_k == 10 %}selected{% endif %}>Top 10</option>
+                                <option value="20" {% if default_top_k == 20 %}selected{% endif %}>Top 20</option>
+                                <option value="50" {% if default_top_k == 50 %}selected{% endif %}>Top 50</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="d-grid">
-                        <button type="submit" id="btnSubmitSearch" class="btn btn-primary btn-lg shadow-sm">
+                        <button type="submit" id="btnSubmitSearch" class="btn btn-primary btn-lg">
                             <span id="searchSpinner" class="spinner-border spinner-border-sm me-2 d-none"></span>
                             <i class="bi bi-search me-1"></i> Detect Face & Rank Candidates
                         </button>
@@ -78,10 +78,10 @@
         </div>
 
         <!-- Testing Tip Card -->
-        <div class="card border-0 shadow-sm rounded-3 mt-3 bg-light-subtle">
+        <div class="card border-0 mt-3">
             <div class="card-body p-3 small">
-                <div class="fw-semibold text-dark mb-1"><i class="bi bi-lightbulb-fill text-warning me-1"></i> Forensic Testing Tip</div>
-                <p class="text-muted mb-0">
+                <div class="fw-semibold mb-1"><i class="bi bi-lightbulb-fill me-1" style="color: var(--accent-amber);"></i> Forensic Testing Tip</div>
+                <p class="mb-0" style="color: var(--text-secondary);">
                     You can test with any facial portrait or sketch. The system applies CLAHE illumination normalization to balance pencil strokes and maps face features into a 128-d SFace embedding vector.
                 </p>
             </div>
@@ -89,43 +89,43 @@
     </div>
 
     <!-- Results Column -->
-    <div class="col-lg-7">
+    <div class="col-lg-7 animate-fadeInUp stagger-2">
         <div id="resultsContainer" class="{% if not success %}d-none{% endif %}">
             <!-- Detection Overview Card -->
-            <div class="card border-0 shadow-sm rounded-3 mb-3">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <span class="fw-bold text-dark"><i class="bi bi-cpu-fill text-success me-2"></i>Detection & Processing Telemetry</span>
-                    <span class="badge bg-success-subtle text-success">Algorithm Completed</span>
+            <div class="card border-0 mb-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-cpu-fill me-2" style="color: var(--accent-emerald);"></i>Detection & Processing Telemetry</span>
+                    <span class="badge bg-success">Algorithm Completed</span>
                 </div>
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-5 text-center mb-3 mb-md-0">
-                            <label class="small text-muted fw-semibold d-block mb-1">Annotated Face Detection</label>
-                            <img id="resAnnotatedImg" src="{% if annotated_image_url %}{{ annotated_image_url }}{% else %}#{% endif %}" class="img-thumbnail shadow-sm rounded" style="max-height: 200px; width: auto;" alt="Annotated Detection">
+                            <label class="small fw-semibold d-block mb-1" style="color: var(--text-secondary);">Annotated Face Detection</label>
+                            <img id="resAnnotatedImg" src="{% if annotated_image_url %}{{ annotated_image_url }}{% else %}#{% endif %}" class="img-thumbnail" style="max-height: 200px; width: auto; border-color: var(--accent-blue);" alt="Annotated Detection">
                         </div>
                         <div class="col-md-7">
                             <div class="row g-2 text-center">
                                 <div class="col-6">
-                                    <div class="p-2 border rounded bg-light">
-                                        <small class="text-muted d-block">Faces Detected</small>
-                                        <span id="resFacesCount" class="fs-4 fw-bold text-primary">{{ faces_detected|default:0 }}</span>
+                                    <div class="hud-stat">
+                                        <div class="label">Faces Detected</div>
+                                        <div class="value" style="color: var(--accent-blue);" id="resFacesCount">{{ faces_detected|default:0 }}</div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="p-2 border rounded bg-light">
-                                        <small class="text-muted d-block">Total Latency</small>
-                                        <span id="resTotalTime" class="fs-4 fw-bold text-warning font-monospace">{{ processing_time|default:0 }}s</span>
+                                    <div class="hud-stat">
+                                        <div class="label">Total Latency</div>
+                                        <div class="value" style="color: var(--accent-amber);" id="resTotalTime">{{ processing_time|default:0 }}s</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Timing breakdown badges -->
-                            <div class="mt-3 small border-top pt-2">
-                                <div class="text-muted mb-1 fw-semibold">Phase Timing Breakdown:</div>
-                                <div class="d-flex justify-content-between text-muted font-monospace">
-                                    <span>Detection: <strong id="timeDet">{{ timing_breakdown.detection_time|default:0 }}s</strong></span>
-                                    <span>Embedding: <strong id="timeEmb">{{ timing_breakdown.embedding_time|default:0 }}s</strong></span>
-                                    <span>Matching: <strong id="timeMatch">{{ timing_breakdown.matching_time|default:0 }}s</strong></span>
+                            <!-- Timing breakdown -->
+                            <div class="mt-3 small" style="border-top: 1px solid var(--glass-border); padding-top: 0.75rem;">
+                                <div class="fw-semibold mb-1" style="color: var(--text-secondary);">Phase Timing Breakdown:</div>
+                                <div class="d-flex justify-content-between font-monospace" style="color: var(--text-muted);">
+                                    <span>Detection: <strong id="timeDet" style="color: var(--accent-blue);">{{ timing_breakdown.detection_time|default:0 }}s</strong></span>
+                                    <span>Embedding: <strong id="timeEmb" style="color: var(--accent-cyan);">{{ timing_breakdown.embedding_time|default:0 }}s</strong></span>
+                                    <span>Matching: <strong id="timeMatch" style="color: var(--accent-emerald);">{{ timing_breakdown.matching_time|default:0 }}s</strong></span>
                                 </div>
                             </div>
                         </div>
@@ -134,17 +134,17 @@
             </div>
 
             <!-- Top Candidates Table Card -->
-            <div class="card border-0 shadow-sm rounded-3">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card border-0">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="fw-bold text-dark"><i class="bi bi-trophy-fill text-warning me-2"></i>Ranked Similarity Matches</span>
-                        <small class="text-muted d-block" style="font-size: 0.75rem;">Probabilistic similarity ranking - Not identity confirmation</small>
+                        <span class="fw-bold"><i class="bi bi-trophy-fill me-2" style="color: var(--accent-amber);"></i>Ranked Similarity Matches</span>
+                        <small class="d-block" style="font-size: 0.7rem; color: var(--text-dim);">Probabilistic similarity ranking — Not identity confirmation</small>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th class="text-center" style="width: 50px;">Rank</th>
                                     <th>Portrait</th>
@@ -159,23 +159,23 @@
                                 {% if primary_matches %}
                                     {% for cand in primary_matches %}
                                         <tr>
-                                            <td class="fw-bold text-center">{{ cand.rank }}</td>
+                                            <td class="fw-bold text-center {% if cand.rank == 1 %}rank-1{% elif cand.rank == 2 %}rank-2{% elif cand.rank == 3 %}rank-3{% endif %}">#{{ cand.rank }}</td>
                                             <td>
-                                                <img src="/media/{{ cand.reference_image }}" alt="{{ cand.name }}" class="candidate-thumb shadow-sm">
+                                                <img src="/media/{{ cand.reference_image }}" alt="{{ cand.name }}" class="candidate-thumb">
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">{{ cand.name }}</div>
-                                                <small class="text-muted">{{ cand.candidate_id }}</small>
+                                                <small class="text-muted font-monospace">{{ cand.candidate_id }}</small>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress flex-grow-1" style="height: 5px;">
                                                         <div class="progress-bar {% if cand.similarity >= 80 %}bg-success{% elif cand.similarity >= 65 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ cand.similarity }}%"></div>
                                                     </div>
-                                                    <span class="fw-bold">{{ cand.similarity }}%</span>
+                                                    <span class="fw-bold font-monospace" style="font-size: 0.85rem;">{{ cand.similarity }}%</span>
                                                 </div>
                                             </td>
-                                            <td class="text-muted font-monospace">{{ cand.distance }}</td>
+                                            <td class="text-muted font-monospace" style="font-size: 0.8rem;">{{ cand.distance }}</td>
                                             <td>
                                                 <span class="badge {% if cand.confidence == 'High' %}badge-similarity-high{% elif cand.confidence == 'Medium' %}badge-similarity-medium{% else %}badge-similarity-low{% endif %}">
                                                     {{ cand.confidence }}
@@ -183,7 +183,7 @@
                                             </td>
                                             <td>
                                                 <a href="{% url 'candidates:detail' cand.candidate_id %}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-person-badge"></i> Profile
+                                                    <i class="bi bi-person-badge"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -202,12 +202,17 @@
             </div>
         </div>
 
-        <!-- Initial Placeholder State when no search executed -->
-        <div id="resultsPlaceholder" class="card border-0 shadow-sm rounded-3 text-center py-5 {% if success %}d-none{% endif %}">
+        <!-- Initial Placeholder State -->
+        <div id="resultsPlaceholder" class="card border-0 text-center py-5 {% if success %}d-none{% endif %}">
             <div class="card-body">
-                <i class="bi bi-images text-muted" style="font-size: 3.5rem;"></i>
-                <h5 class="fw-bold text-secondary mt-3">No Search Executed Yet</h5>
-                <p class="text-muted small mx-auto" style="max-width: 400px;">
+                <div class="scanner-placeholder mb-3">
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-dot"></div>
+                </div>
+                <h5 class="fw-bold mt-3" style="color: var(--text-secondary);">No Search Executed Yet</h5>
+                <p class="small mx-auto" style="max-width: 400px; color: var(--text-muted);">
                     Upload a facial sketch or composite portrait on the left and click "Detect Face & Rank Candidates" to view probabilistic matching candidates.
                 </p>
             </div>

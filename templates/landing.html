@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - CrimeSketch-ID Forensic AI{% endblock %}
+
+{% block content %}
+<!-- Top Header & Primary Action -->
+<div class="d-flex justify-content-between align-items-center mb-4 animate-fadeInUp">
+    <div class="welcome-hero">
+        <h2 class="fw-bold mb-1">CrimeSketch-ID &bull; Forensic AI Platform</h2>
+        <p class="small mb-0 text-secondary">Cross-modal biometric facial sketch similarity search and neural candidate ranking.</p>
+    </div>
+    <div class="d-flex gap-2">
+        {% if request.session.user_id %}
+            <a href="{% url 'dashboard:index' %}" class="btn btn-primary px-4 shadow-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Open Dashboard
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary px-4 shadow-sm">
+                <i class="bi bi-shield-lock me-1"></i> Investigator Terminal
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Telemetry & Spec Cards (Matching Dashboard & Search Pages) -->
+<div class="row g-3 mb-4 animate-fadeInUp stagger-1">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <div>
+                    <span class="small text-muted text-uppercase fw-semibold d-block">Neural Model</span>
+                    <h5 class="fw-bold mb-0">OpenCV YuNet</h5>
+                    <small class="text-secondary font-monospace" style="font-size: 0.75rem;">5-Point Landmark Lock</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper bg-info-subtle text-info">
+                    <i class="bi bi-bounding-box-circles"></i>
+                </div>
+                <div>
+                    <span class="small text-muted text-uppercase fw-semibold d-block">Vector Space</span>
+                    <h5 class="fw-bold mb-0">128-D SFace</h5>
+                    <small class="text-secondary font-monospace" style="font-size: 0.75rem;">Unit Hypersphere</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper bg-success-subtle text-success">
+                    <i class="bi bi-diagram-2"></i>
+                </div>
+                <div>
+                    <span class="small text-muted text-uppercase fw-semibold d-block">Metric Strategy</span>
+                    <h5 class="fw-bold mb-0">Cosine & Euclidean</h5>
+                    <small class="text-secondary font-monospace" style="font-size: 0.75rem;">Probabilistic Distance</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+                    <i class="bi bi-database-check"></i>
+                </div>
+                <div>
+                    <span class="small text-muted text-uppercase fw-semibold d-block">Repository</span>
+                    <h5 class="fw-bold mb-0">Pure MongoDB</h5>
+                    <small class="text-secondary font-monospace" style="font-size: 0.75rem;">Indexed Vector Storage</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Left Column: System Overview & Radar Visual -->
+    <div class="col-lg-5 animate-fadeInUp stagger-2">
+        <div class="card border-0 mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-fingerprint me-2 text-primary"></i>Biometric Scanner</span>
+                <span class="badge bg-primary-subtle text-primary">Online</span>
+            </div>
+            <div class="card-body text-center p-4">
+                <div class="scanner-placeholder my-3">
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-dot"></div>
+                </div>
+
+                <h5 class="fw-bold mt-3 mb-1">Cross-Modal AI Matrix</h5>
+                <p class="small text-secondary mb-3">
+                    Converts pencil sketches and witness composites into mathematical vectors to query registered reference identities.
+                </p>
+
+                <div class="row g-2 text-start mt-3">
+                    <div class="col-6">
+                        <div class="hud-stat">
+                            <div class="label">Inference Time</div>
+                            <div class="value text-warning" style="font-size: 1.15rem;">&lt; 0.25s</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hud-stat">
+                            <div class="label">Vector Precision</div>
+                            <div class="value text-info" style="font-size: 1.15rem;">Float32</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    {% if request.session.user_id %}
+                        <a href="{% url 'sketch_search' %}" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i> Launch Sketch Search
+                        </a>
+                        <a href="{% url 'live_camera' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-webcam me-1"></i> Multi-Face Webcam Feed
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login to Access Terminal
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Step-by-Step Architecture Pipeline -->
+    <div class="col-lg-7 animate-fadeInUp stagger-3">
+        <div class="card border-0 mb-4">
+            <div class="card-header py-3">
+                <span class="fw-bold"><i class="bi bi-diagram-3-fill me-2 text-info"></i>Forensic Processing Pipeline</span>
+            </div>
+            <div class="card-body p-4">
+                <p class="small text-secondary mb-4">
+                    The cross-modal retrieval workflow handles pencil-stroke variations and maps multi-scale face crops into standard metric space:
+                </p>
+
+                <!-- Workflow Pipeline (Matches custom_2.css workflow-step) -->
+                <div class="row g-2 align-items-center mb-4">
+                    <div class="col">
+                        <div class="workflow-step">
+                            <i class="bi bi-image d-block fs-5 text-primary mb-1"></i>
+                            Input Probe
+                        </div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-chevron-right workflow-arrow"></i></div>
+                    <div class="col">
+                        <div class="workflow-step">
+                            <i class="bi bi-sliders d-block fs-5 text-info mb-1"></i>
+                            CLAHE Balance
+                        </div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-chevron-right workflow-arrow"></i></div>
+                    <div class="col">
+                        <div class="workflow-step">
+                            <i class="bi bi-bounding-box d-block fs-5 text-success mb-1"></i>
+                            YuNet Align
+                        </div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-chevron-right workflow-arrow"></i></div>
+                    <div class="col">
+                        <div class="workflow-step">
+                            <i class="bi bi-vector-pen d-block fs-5 text-warning mb-1"></i>
+                            SFace Vector
+                        </div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-chevron-right workflow-arrow"></i></div>
+                    <div class="col">
+                        <div class="workflow-step">
+                            <i class="bi bi-trophy d-block fs-5 text-danger mb-1"></i>
+                            Rank Top-K
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-surface border p-3 rounded-3 mb-3">
+                    <h6 class="fw-bold small mb-2 text-primary"><i class="bi bi-shield-check me-1"></i> Key Capabilities</h6>
+                    <ul class="list-unstyled small text-secondary mb-0">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Pencil Stroke Compensation:</strong> Contrast Limited Adaptive Histogram Equalization normalizes drawn graphite strokes[cite: 18].</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Real-Time Video Matching:</strong> Inspects live RTSP or webcam streams with simultaneous multi-face detection[cite: 9, 16].</li>
+                        <li class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Audited Search Trails:</strong> Every query logs execution time, detected bounding boxes, and ranked candidates directly to MongoDB[cite: 2, 3, 12].</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Academic Disclaimer Strip -->
+<div class="academic-disclaimer-banner mb-4 animate-fadeInUp">
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-shield-exclamation fs-5 flex-shrink-0 text-warning"></i>
+        <div>
+            <strong>Academic Research Protocol:</strong> CrimeSketch-ID evaluates mathematical cross-modal distance between sketches and photos[cite: 1, 12]. Metric similarity scores do not constitute definitive identity confirmation or legal guilt[cite: 12].
+        </div>
+    </div>
+</div>
+{% endblock %}

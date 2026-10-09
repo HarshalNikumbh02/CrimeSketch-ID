@@ -10,6 +10,14 @@ from utils.mongodb import (
 )
 from utils.decorators import login_required, admin_required
 
+def landing_page_view(request):
+    """
+    Public landing page for visitors before entering the system.
+    Redirects already authenticated users directly to the dashboard.
+    """
+    if request.session.get('user_id'):
+        return redirect('dashboard:index')
+    return render(request, 'landing.html')
 
 @login_required
 def dashboard_index(request):

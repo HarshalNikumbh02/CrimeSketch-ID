@@ -1,17 +1,15 @@
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-from dashboard.views import dashboard_index, settings_view, help_view, about_view
+from dashboard.views import dashboard_index, settings_view, help_view, about_view, landing_page_view
 from accounts.views import login_view, logout_view, profile_view
 from recognition.views import sketch_search_view, live_camera_view, api_sketch_search, api_webcam_analyze
 from searches.views import history_list_view, result_detail_view
 
 urlpatterns = [
     # Core Home & Dashboard
-    path('', dashboard_index, name='home'),
+    path('', landing_page_view, name='landing'),
     path('dashboard/', include('dashboard.urls')),
-    
     
     # Direct Root Feature URLs as per specification
     path('sketch-search/', sketch_search_view, name='sketch_search'),
